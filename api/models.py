@@ -19,7 +19,6 @@ class City(models.Model):
     
 class Location(models.Model):
     name = models.CharField(max_length=200)
-    url = models.CharField(max_length=1000, null=True, blank=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     position = models.CharField(max_length=200, null=True, blank=True)
     image = models.FileField(upload_to='images/', null=True, blank=True)
@@ -36,6 +35,7 @@ class Trip(models.Model):
     title = models.CharField(max_length=200)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     information = models.CharField(max_length=300, null=True, blank=True)
+    url = models.CharField(max_length=1000, null=True, blank=True)
     
     def __str__(self):
         return self.title
