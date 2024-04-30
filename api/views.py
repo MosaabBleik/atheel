@@ -77,7 +77,6 @@ class Logout(APIView):
     
     
 class Profile(APIView):
-    permission_classes = [AllowAny]
     def put(self, request):
         phone_number = request.data["phone_number"]
         username = request.data["username"]
@@ -99,20 +98,17 @@ class Profile(APIView):
 
     def get(self, request):
         user = request.user
-        if str(user) != "AnonymousUser":
-            profile = UserProfile.objects.get(user=user)
+        
+        profile = UserProfile.objects.get(user=user)
 
-            data = {
-                "username": user.username,
-                "email": user.email,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "phone_number": profile.phone_number
-            }
-            return Response(data)
-    
-        else: return Response(status=401)
-    
+        data = {
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "phone_number": profile.phone_number
+        }
+        return Response(data)
     
 class Trips(APIView):
     permission_classes = [AllowAny]
