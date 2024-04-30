@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import Trips, Locations, Favorite
+from .views import Trips, Locations, Favorites, Cities, Profile, Recommendations
 from . import views
 
 urlpatterns = [
@@ -7,7 +7,19 @@ urlpatterns = [
     path('authenticate/login', views.Login.as_view(), name='login'),
     path('authenticate/logout', views.Logout.as_view(), name='logout'),
 
+    path('cities', Cities.as_view(), name='cities'),
+    path('cities/<id>', Cities.as_view(), name='single_city'),
+
     path('trips', Trips.as_view(), name='trips'),
+    path('trips/<id>', Trips.as_view(), name='single_trip'),
+
     path('locations', Locations.as_view(), name='locations'),
-    path('favorites', Favorite.as_view(), name='favorites'),
+    path('locations/<id>', Locations.as_view(), name='single_location'),
+
+    path('favorites', Favorites.as_view(), name='favorites'),
+    path('favorites/<id>', Favorites.as_view(), name='single_favorite'),
+
+    path('recommendations', Favorites.as_view(), name='recommendations'),
+    path('profile', Profile.as_view(), name='profile'),
+    
 ]
