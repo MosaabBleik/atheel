@@ -22,6 +22,7 @@ class Register(APIView):
         password = request.data["password"]
         first_name = request.data["first_name"]
         last_name = request.data["last_name"]
+        phone_number = request.data["phone_number"]
 
         user = User()
         user.username = username
@@ -38,7 +39,10 @@ class Register(APIView):
 
         profile = UserProfile()
         profile.user = user
+        profile.phone_number = phone_number
         profile.save()
+
+        return Response(status=200)
 
 
 class Login(APIView):
