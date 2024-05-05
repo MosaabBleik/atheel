@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.html import mark_safe
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class UserProfile(models.Model):
@@ -42,7 +43,7 @@ class Trip(models.Model):
     
 class TripRating(models.Model):
     comment = models.CharField(max_length=200)
-    rate = models.FloatField(max_length=5.0, default=0.0)
+    rate = models.FloatField(max_length=5.0, default=0.0, validators=[MaxValueValidator(5), MinValueValidator(0)])
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     trip = models.ForeignKey(Trip, related_name='trips', on_delete=models.CASCADE)
 
