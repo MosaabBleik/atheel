@@ -196,15 +196,42 @@ class Favorites(APIView):
 
         trip = Trip.objects.get(pk=trip_id)
         if action == "add":
+            if not Favorite.objects.filter(user=request.user, trip=trip).exists():
 
-            fav = Favorite()
-            fav.user = request.user
-            fav.trip = trip
-            fav.save()
+                fav = Favorite()
+                fav.user = request.user
+                fav.trip = trip
+                fav.save()
+                return Response(status=200)
+            
+            else:
+                return Response(status=500)
         
         else:
             fav = Favorite.objects.get(trip=trip, user=request.user)
             fav.delete()
+            return Response(status=200)
+        
+        
+class Ratings(APIView):
+    def post(self, request):
+        trip_id = request.data["trip_id"]
+        rate = request.data["rate"]
+        comment = request.data["comment"]
+
+        trip = Trip.objects.get(pk=trip_id)
+
+        if not TripRating.objects.filter(user=request.user, trip=trip).exists():
+            rating = TripRating()
+            rating.trip = trip
+            rating.user = request.user
+            rating.comment = comment
+            rating.rate = rate
+            rating.save()
+            return Response(status=200)
+        
+        else:
+            return Response(status=500)
 
         
         

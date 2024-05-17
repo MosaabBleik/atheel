@@ -21,7 +21,8 @@ class Trip(models.Model):
     site_name = models.CharField(max_length=200, null=True, blank=True)#site name 
     visitor_rating = models.CharField(max_length=500, null=True, blank=True) 
     trip_details = models.TextField(max_length=1000, null=True, blank=True) 
-    historical_significance = models.CharField(max_length=500, null=True, blank=True)      
+    historical_significance = models.CharField(max_length=500, null=True, blank=True)
+    location = models.CharField(max_length=200, null=True, blank=True)
     url = models.CharField(max_length=1000, null=True, blank=True)
     image = models.ImageField(blank=True, null=True)
      

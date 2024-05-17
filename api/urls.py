@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import Trips, Favorites, Cities, Profile
+from .views import Trips, Favorites, Cities, Profile, Ratings
 from . import views
 
 urlpatterns = [
@@ -20,5 +20,7 @@ urlpatterns = [
     path('favorites/<id>', Favorites.as_view(), name='single_favorite'),
 
     path('profile', Profile.as_view(), name='profile'),
+
+    path('rating', Ratings.as_view(), name="rating")
     
 ]
