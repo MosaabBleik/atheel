@@ -17,7 +17,7 @@ class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'trip')
 
 class TripAdmin(admin.ModelAdmin):
-    list_display = ('id', 'site_name', 'information')
+    list_display = ('id', 'site_name')
 
 class TripRatingAdmin(admin.ModelAdmin):
     list_display = ('id', 'comment', 'rate', 'user', 'trip')
