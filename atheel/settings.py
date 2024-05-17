@@ -95,7 +95,7 @@ DATABASES = {
 
 ALLOWED_HOSTS = ['192.168.1.101', 'localhost', '127.0.0.1']
 
-MEDIA_URL = '/media/'
+MEDIA_URL = 'media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
 # Password validation
