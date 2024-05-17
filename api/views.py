@@ -7,8 +7,8 @@ from django.contrib.auth import login, logout
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.db.models import Avg
-from .models import City, Location, Trip, TripRating, Favorite, UserProfile, Recommendation
-from .serializers import TripSerializer, LocationSerializer, FavoriteSerializer, CitySerializer, RecommendationSerializer, ProfileSerializer
+from .models import City, Trip, TripRating, Favorite, UserInfo
+from .serializers import TripSerializer, FavoriteSerializer, CitySerializer, ProfileSerializer
 from datetime import datetime
 from rest_framework.permissions import AllowAny
 from api.backend import EmailBackend
@@ -37,7 +37,7 @@ class Register(APIView):
         token.generate_key()
         token.save()
 
-        profile = UserProfile()
+        profile = UserInfo()
         profile.user = user
         profile.phone_number = phone_number
         profile.save()
@@ -82,28 +82,38 @@ class Logout(APIView):
     
 class Profile(APIView):
     def put(self, request):
-        phone_number = request.data["phone_number"]
-        username = request.data["username"]
-        email = request.data["email"].lower()
-        password = request.data["password"]
-        first_name = request.data["first_name"]
-        last_name = request.data["last_name"]
-        
-        user = User.objects.get(email=email)
-        user.email = email
-        user.username = username
-        user.first_name = first_name
-        user.last_name = last_name
-        user.save()
+        try:
+            phone_number = request.data["phone_number"]
+            username = request.data["username"]
+            password = request.data["password"]
+            email = request.data["email"]
+            first_name = request.data["first_name"]
+            last_name = request.data["last_name"]
+            
+            user = User.objects.get(pk=request.user.pk)
+            user.email = email
+            user.username = username
+            user.first_name = first_name
+            user.last_name = last_name
 
-        profile = UserProfile.objects.get(user=user)
-        profile.phone_number = phone_number
-        profile.save()
+            if password is not None and password != "":
+                print("AAAAAAAAAAAAAAAAAAAAAAAAA")
+                user.set_password(password)
+            user.save()
+
+            profile = UserInfo.objects.get(user=user)
+            profile.phone_number = phone_number
+            profile.save()
+
+            return Response(status=200)
+
+        except Exception:
+            return Response(status=500)
 
     def get(self, request):
         user = request.user
         
-        profile = UserProfile.objects.get(user=user)
+        profile = UserInfo.objects.get(user=user)
 
         data = {
             "username": user.username,
@@ -125,7 +135,10 @@ class Trips(APIView):
 
                 serializer = TripSerializer(trip)
                 data = serializer.data
-                data["average_rating"] = average_rating
+                if average_rating is None:
+                    data["average_rating"] = 0.0
+                else:
+                    data["average_rating"] = average_rating
                 return Response(data)
             
             else:
@@ -135,44 +148,26 @@ class Trips(APIView):
         else:
             trips = Trip.objects.all()
             serializer = TripSerializer(trips, many=True)
-            return Response(serializer.data)
+            return Response({"data": serializer.data})
         
     
-class Locations(APIView):
-    permission_classes = [AllowAny]
-    def get(self, request, id=None):
+# class Locations(APIView):
+#     permission_classes = [AllowAny]
+#     def get(self, request, id=None):
         
-        if id is not None:
-            if Location.objects.filter(pk=id).exists():
-                location = Location.objects.get(pk=id)
-                serializer = LocationSerializer(location)
-                return Response(serializer.data)
+#         if id is not None:
+#             if Location.objects.filter(pk=id).exists():
+#                 location = Location.objects.get(pk=id)
+#                 serializer = LocationSerializer(location)
+#                 return Response(serializer.data)
             
-            else:
-                return Response(status=404)
+#             else:
+#                 return Response(status=404)
         
-        else:
-            locations = Location.objects.all()
-            serializer = LocationSerializer(locations, many=True)
-            return Response(serializer.data)
-        
-        
-class Recommendations(APIView):
-    def get(self, request, id=None):
-        
-        if id is not None:
-            if Recommendation.objects.filter(pk=id).exists():
-                rec = Recommendation.objects.get(pk=id)
-                serializer = RecommendationSerializer(rec)
-                return Response(serializer.data)
-            
-            else:
-                return Response(status=404)
-        
-        else:
-            recs = Recommendation.objects.all()
-            serializer = RecommendationSerializer(recs, many=True)
-            return Response(serializer.data)
+#         else:
+#             locations = Location.objects.all()
+#             serializer = LocationSerializer(locations, many=True)
+#             return Response(serializer.data)
     
     
 class Favorites(APIView):
@@ -190,7 +185,27 @@ class Favorites(APIView):
         else:
             favorites = Favorite.objects.filter(user=request.user)
             serializer = FavoriteSerializer(favorites, many=True)
-            return Response(serializer.data)
+            return Response({"data": serializer.data})
+        
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=401)
+        
+        trip_id = request.data["trip_id"]
+        action = request.data["action"]
+
+        trip = Trip.objects.get(pk=trip_id)
+        if action == "add":
+
+            fav = Favorite()
+            fav.user = request.user
+            fav.trip = trip
+            fav.save()
+        
+        else:
+            fav = Favorite.objects.get(trip=trip, user=request.user)
+            fav.delete()
+
         
         
 class Cities(APIView):
@@ -208,4 +223,4 @@ class Cities(APIView):
         else:
             cities = City.objects.all()
             serializer = CitySerializer(cities, many=True)
-            return Response(serializer.data)
+            return Response({"data": serializer.data})

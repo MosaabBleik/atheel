@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import City, Trip, TripRating, Location, Favorite, Recommendation, UserProfile
+from .models import City, Trip, TripRating, UserInfo, Favorite
 
 class TripSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,11 +8,11 @@ class TripSerializer(serializers.ModelSerializer):
         depth = 2
     average_rating = serializers.FloatField(read_only=True)
     
-class LocationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Location
-        fields = '__all__'
-        depth = 1
+# class LocationSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Location
+#         fields = '__all__'
+#         depth = 1
     
 class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,12 +34,6 @@ class CitySerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserProfile
-        fields = '__all__'
-        depth = 1
-
-class RecommendationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Recommendation
+        model = UserInfo
         fields = '__all__'
         depth = 1
